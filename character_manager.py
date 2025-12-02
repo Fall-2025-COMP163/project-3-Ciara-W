@@ -1,10 +1,25 @@
-""" 
+"""
 COMP 163 - Project 3: Quest Chronicles
-Character Manager Module - Starter Code
+Character Manager Module
 Name: [Your Name Here]
-AI Usage: [Document any AI assistance used] This module handles character creation, loading, and saving. 
+AI Usage: [Document any AI assistance used]
+
+This module handles character creation, loading, and saving.
 """
 
+import os
+
+from custom_exceptions import (
+    InvalidCharacterClassError,
+    CharacterNotFoundError,
+    CharacterDeadError,
+    InvalidSaveDataError,
+    SaveFileCorruptedError
+)
+
+# ======================================================================
+# CHARACTER MANAGEMENT
+# ======================================================================
 
 def create_character(name, character_class):
     valid_classes = {
@@ -49,7 +64,7 @@ def save_character(character, save_directory="data/save_games"):
                 f.write(f"{key.upper()}: {value}\n")
         return True
     except Exception:
-        raise  # Let PermissionError / IOError propagate per instructions
+        raise  # Let PermissionError / IOError propagate
 
 
 def load_character(character_name, save_directory="data/save_games"):
@@ -141,7 +156,6 @@ def add_gold(character, amount):
     new_total = character["gold"] + amount
     if new_total < 0:
         raise ValueError("Gold cannot be negative")
-
     character["gold"] = new_total
     return character["gold"]
 
@@ -159,7 +173,6 @@ def is_character_dead(character):
 def revive_character(character):
     if character["health"] > 0:
         return False  # already alive
-
     character["health"] = character["max_health"] // 2
     return True
 
@@ -177,13 +190,11 @@ def validate_character_data(character):
 
     numeric_fields = ["level", "health", "max_health", "strength",
                       "magic", "experience", "gold"]
-
     for nf in numeric_fields:
         if not isinstance(character[nf], int):
             raise InvalidSaveDataError(f"Field {nf} must be an integer")
 
     list_fields = ["inventory", "active_quests", "completed_quests"]
-
     for lf in list_fields:
         if not isinstance(character[lf], list):
             raise InvalidSaveDataError(f"Field {lf} must be a list")
